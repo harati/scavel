@@ -1,9 +1,7 @@
 package ru.harati.scavel.d3
 
-import ru.harati.d2.{Point2, Vec2}
 import ru.harati.scavel.{AbstractPoint, Misc, Point}
 import ru.harati.scavel.d2.Point2
-import ru.harati.{AbstractPoint, Misc, Point, Vector}
 
 import scala.math.Numeric.Implicits._
 

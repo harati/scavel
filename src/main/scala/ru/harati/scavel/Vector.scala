@@ -1,8 +1,6 @@
 package ru.harati.scavel
 
 import Tolerance._
-import ru.harati.d2.Vec2
-import ru.harati.d3.Vec3
 import ru.harati.scavel.d2.Vec2
 import ru.harati.scavel.d3.Vec3
 
@@ -52,7 +50,7 @@ abstract class Vector[T: Numeric] extends AbstractVector with AttachedSpace[T] {
   override def contains(f: AbstractPoint): Boolean = (f.distance(carrier) + f.distance(Point.zero)) ~= length
 
   override def equals(obj: scala.Any): Boolean = obj match {
-    case f: Vector[_] => f.carrier == carrier
+    case f: Vector[_] => carrier == f.carrier
     case _            => false
   }
 

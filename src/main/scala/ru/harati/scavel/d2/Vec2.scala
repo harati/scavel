@@ -1,12 +1,12 @@
 package ru.harati.scavel.d2
 
-import ru.harati.Axis.{AxisProjection, X, Y, Z}
 
-import scala.math.Numeric.Implicits._
-import ru.harati.Tolerance._
+import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
 import ru.harati.scavel.{Axis, Vector}
+import scala.math.Numeric.Implicits._
+import ru.harati.scavel.Tolerance._
 import ru.harati.scavel.d3.Point3
-import ru.harati.{Axis, Vector}
+
 
 /**
  * Creation date: 17.08.2016
@@ -64,4 +64,5 @@ class Vec2[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point
     }
   }
 
+  override def toString: String = s"Vec(${carrier.x}, ${carrier.y})"
 }

@@ -2,8 +2,6 @@ package ru.harati.scavel.d2
 
 import ru.harati.scavel.{AbstractPoint, Misc, Point}
 import ru.harati.scavel.d3.Point3
-import ru.harati.{AbstractPoint, Misc, Point, Vector}
-
 import scala.math.Numeric.Implicits._
 import scala.util.hashing.MurmurHash3
 

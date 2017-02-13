@@ -1,6 +1,5 @@
 package ru.harati.scavel.d2
 
-import ru.harati.AbstractPoint
 import ru.harati.scavel.d3.Point3d
 
 /**

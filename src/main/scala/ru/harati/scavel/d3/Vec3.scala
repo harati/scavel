@@ -1,11 +1,10 @@
 package ru.harati.scavel.d3
 
-import ru.harati.Axis.{AxisProjection, X, Y, Z}
+import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
 import ru.harati.scavel.{Axis, Vector}
 import ru.harati.scavel.d2.Vec2d
 
 import scala.math.Numeric.Implicits._
-import ru.harati.{Axis, Vector}
 
 /**
  * Creation date: 17.08.2016
@@ -48,15 +47,6 @@ class Vec3[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point
   def angle(another: Vec3[T]): Double = Math.acos((this * another).toDouble() / (length * another.length))
 
   /**
-   * Project this vector to vector @f
-   */
-  def apply(f: Vec3[T]): Vec3d = {
-    val scalar = (this * f).toDouble()
-    val norm = scalar / Math.pow(f.length, 2)
-    f * norm
-  }
-
-  /**
    * Project vector to axis
    */
   def apply(f: Axis): Vec3[T] with AxisProjection[T] = {
@@ -67,4 +57,6 @@ class Vec3[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point
       case Z => new Vec3[T](Point3[T](zero, zero, carrier.z)) with AxisProjection[T] { def value = carrier.z }
     }
   }
+
+  override def toString: String = s"Vec(${carrier.x}, ${carrier.y}, ${carrier.z})"
 }

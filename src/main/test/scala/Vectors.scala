@@ -1,10 +1,9 @@
 package scala
-
+import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
 import org.scalatest._
-import ru.harati.Axis.Y
-import ru.harati.d3.{Point3, Vec3}
 import ru.harati.scavel.d2.Vec2
 import ru.harati.scavel.d3.{Point3, Vec3}
+import ru.harati.scavel.Tolerance._
 
 /**
  * Creation date: 17.08.2016
@@ -29,14 +28,8 @@ class Vectors extends FlatSpec with Matchers {
     val b = Vec2(1, 2)
     a.dimension should be(2)
     b.dimension should be(2)
-    (a + Vec3(1D, 2D, 3D)).dimension should be(3)
+    (a + Vec3(1, 2, 3)).dimension should be(3)
   }
 
-  "Vectors" should "be normally projectable to each other and axis" in {
-    val vAxis = Vec3(1, 0, 0)
-    val a = Vec3(3, 3, 3)
-    (2 * a)(vAxis) should be(Vec3(6, 0, 0))
-    (vAxis + Vec3(0, 1, 0))(Y) should be(Vec3(0, 1, 0))
-  }
 
 }

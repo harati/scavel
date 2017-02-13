@@ -1,7 +1,6 @@
 package ru.harati.scavel
 
 import Tolerance._
-import ru.harati.d2.{Vec2, Vec2d}
 import ru.harati.scavel.d3.Vec3
 
 import scala.math.Numeric.Implicits

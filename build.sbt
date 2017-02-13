@@ -2,15 +2,12 @@ name := "scavel"
 
 version := "0.1.0"
 
-publishArtifact := false
-
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 organizationName := "Kirill Lonhus"
 organization := "ru.harati"
 crossPaths := true
 crossScalaVersions := Seq("2.10.4", "2.11.7", "2.12.1")
-publishMavenStyle := true
 
 licenses := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 homepage := Some(url("https://github.com/harati/scavel"))
@@ -32,7 +29,8 @@ pomExtra := {
   </developers>
 }
 
-publishTo := {   val nexus = "https://oss.sonatype.org/"
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
   if (isSnapshot.value)
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else

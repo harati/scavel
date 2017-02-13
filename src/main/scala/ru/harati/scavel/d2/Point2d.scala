@@ -1,10 +1,8 @@
 package ru.harati.scavel.d2
 
-import ru.harati.AbstractPoint
-import ru.harati.d3.{Point3, Point3d}
-import ru.harati.Tolerance._
 import ru.harati.scavel.AbstractPoint
 import ru.harati.scavel.d3.Point3d
+import ru.harati.scavel.Tolerance._
 
 /**
  * Creation date: 17.08.2016

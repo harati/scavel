@@ -1,7 +1,5 @@
 package ru.harati.scavel.d2
 
-import ru.harati.d3.Point3d
-
 /**
  * Creation date: 17.08.2016
  * Copyright (c) harati
