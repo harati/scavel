@@ -2,7 +2,8 @@ package ru.harati.scavel.d2
 
 
 import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
-import ru.harati.scavel.{Axis, Vector}
+import ru.harati.scavel.{Axis, Point, Vector}
+
 import scala.math.Numeric.Implicits._
 import ru.harati.scavel.Tolerance._
 import ru.harati.scavel.d3.Point3

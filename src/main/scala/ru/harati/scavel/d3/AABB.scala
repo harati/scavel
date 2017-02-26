@@ -11,18 +11,23 @@ import scala.math.Numeric.Implicits._
  */
 object AABB {
 
-  def apply[T: Numeric](a: Point3[T], b: Point3[T]) = new AABB[T](a, b)
+  def apply[T: Fractional](a: Point3[T], b: Point3[T]) = new AABB[T](a, b)
 
 }
 
-class AABB[@specialized(Int, Long, Float, Double) T: Numeric](a: Point3[T], b: Point3[T]) extends Shape with AttachedSpace[T] {
+class AABB[@specialized(Int, Long, Float, Double) T: Fractional](a: Point3[T], b: Point3[T]) extends Shape with AttachedSpace[T] {
 
-  override protected def space: Numeric[T] = implicitly[Numeric[T]]
+  override protected def space: Fractional[T] = implicitly[Fractional[T]]
 
   val min = a min b
   val max = a max b
 
-  def center = min average max
+  def center = {
+    val x = space.div(space.plus(min.x, max.x), space.fromInt(2))
+    val y = space.div(space.plus(min.y, max.y), space.fromInt(2))
+    val z = space.div(space.plus(min.z, max.z), space.fromInt(2))
+    Point3[T](x, y, z)
+  }
 
   /**
    * Contains given point, border excluded

@@ -1,6 +1,6 @@
 package ru.harati.scavel.d2
 
-import ru.harati.scavel.{AbstractPoint, Misc, Point}
+import ru.harati.scavel.{AbstractPoint,Point}
 import ru.harati.scavel.d3.Point3
 import scala.math.Numeric.Implicits._
 import scala.util.hashing.MurmurHash3
@@ -54,8 +54,6 @@ class Point2[@specialized(Int, Long, Float, Double) T: Numeric](val x: T, val y:
    */
   def min(o: Point2[T]) = Point2[T](space.min(x, o.x), space.min(y, o.y))
   def max(o: Point2[T]) = Point2[T](space.max(x, o.x), space.max(y, o.y))
-
-  def average(o: Point2[T]): Point2[T] = Point2[T](Misc.average(o.x, x), Misc.average(o.y, y))
 
   /**
    * Some translation

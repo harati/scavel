@@ -1,6 +1,6 @@
 package ru.harati.scavel.d3
 
-import ru.harati.scavel.{AbstractPoint, Misc, Point}
+import ru.harati.scavel.{AbstractPoint, Point}
 import ru.harati.scavel.d2.Point2
 
 import scala.math.Numeric.Implicits._
@@ -60,8 +60,6 @@ class Point3[@specialized(Int, Long, Float, Double) T: Numeric](val x: T, val y:
    */
   def min(o: Point3[T]) = Point3[T](space.min(x, o.x), space.min(y, o.y), space.min(z, o.z))
   def max(o: Point3[T]) = Point3[T](space.max(x, o.x), space.max(y, o.y), space.max(z, o.z))
-
-  def average(o: Point3[T]): Point3[T] = Point3[T](Misc.average(o.x, x), Misc.average(o.y, y), Misc.average(o.z, z))
 
   /**
    * Some translation
