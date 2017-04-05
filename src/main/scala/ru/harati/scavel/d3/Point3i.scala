@@ -12,6 +12,6 @@ object Point3i {
 
 }
 
-class Point3i(x: Int, y: Int, z: Int) extends Point3[Int](x, y, z) {
+final class Point3i(x: Int, y: Int, z: Int) extends Point3[Int](x, y, z) {
 
 }

@@ -11,6 +11,6 @@ object Vec3i {
 
 }
 
-class Vec3i(carrier: Point3i) extends Vec3[Int](carrier) {
+final class Vec3i(carrier: Point3i) extends Vec3[Int](carrier) {
 
 }

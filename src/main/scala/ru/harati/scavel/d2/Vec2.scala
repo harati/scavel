@@ -1,22 +1,30 @@
 package ru.harati.scavel.d2
 
-
 import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
-import ru.harati.scavel.{Axis, Point, Vector}
+import ru.harati.scavel.{Axis, Point, VectorFactory, Vector}
 
 import scala.math.Numeric.Implicits._
 import ru.harati.scavel.Tolerance._
 import ru.harati.scavel.d3.Point3
 
-
 /**
  * Creation date: 17.08.2016
  * Copyright (c) harati
  */
-object Vec2 {
+object Vec2 extends VectorFactory[Vec2]{
 
   def apply[T: Numeric](c: Point2[T]): Vec2[T] = new Vec2[T](c)
   def apply[T: Numeric](x: T, y: T): Vec2[T] = Vec2(Point2(x, y))
+
+  @inline def zero[T: Numeric] = {
+    val space = implicitly[Numeric[T]]
+    Vec2(space.zero, space.zero)
+  }
+
+  @inline def one[T: Numeric] = {
+    val space = implicitly[Numeric[T]]
+    Vec2(space.one, space.one)
+  }
 
 }
 
@@ -31,7 +39,6 @@ class Vec2[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point
   def -(c: Vec2[T]) = Vec2(x - c.x, y - c.y)
 
   def *(f: T) = Vec2(f * x, f * y)
-  def *(f: Double) = Vec2d(x.toDouble() * f, y.toDouble() * f)
   def unary_- = Vec2(-x, -y)
 
   /**
@@ -50,7 +57,7 @@ class Vec2[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point
   def apply(f: Vec2[T]): Vec2d = {
     val scalar = (this * f).toDouble()
     val norm = scalar / Math.pow(f.length, 2)
-    f * norm
+    Vec2d(x.toDouble() * norm, y.toDouble() * norm)
   }
 
   /**

@@ -5,7 +5,7 @@ package ru.harati.scavel
  * Copyright (c) harati
  */
 
-object AbstractPoint {
+object AbstractPoint extends {
 
 }
 

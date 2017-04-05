@@ -4,16 +4,16 @@ package ru.harati.scavel
  * Creation date: 17.08.2016
  * Copyright (c) harati
  */
-object Point {
+object Point  {
 
-  def zero[T: Numeric]: ZeroPoint[T] = new ZeroPoint[T] {
+  def zero[T: Numeric]: Point[T] = new ZeroPoint[T] {
 
     /**
      * Consider always double
      */
     override def distance(f: AbstractPoint): Double = f match {
       case p: ZeroPoint[_] => 0
-      case other           => other distance this
+      case other => other distance this
     }
 
     /**
@@ -35,8 +35,8 @@ object Point {
      * Build vector by two points
      */
     override def -(other: Point[T]): Vector[T] = other match {
-      case f: ZeroPoint[_] => Vector.zero[T]
-      case point           => -(point - this)
+      case _: ZeroPoint[_] => Vector.zero[T]
+      case point => -(point - this)
     }
 
     override def toRadiusVector: Vector[T] = Vector.zero[T]
@@ -56,7 +56,7 @@ abstract class Point[T: Numeric] extends AbstractPoint with AttachedSpace[T] {
 
   override def equals(obj: scala.Any): Boolean = obj match {
     case f: Point[_] => f.toDoublePoint == this.toDoublePoint
-    case _           => false
+    case _ => false
   }
 
   /**

@@ -1,8 +1,8 @@
 package ru.harati.scavel.d3
 
 import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
-import ru.harati.scavel.{Axis, Vector}
-import ru.harati.scavel.d2.Vec2d
+import ru.harati.scavel.{Axis, VectorFactory, Vector}
+import ru.harati.scavel.d2.{Vec2, Vec2d}
 
 import scala.math.Numeric.Implicits._
 
@@ -10,10 +10,20 @@ import scala.math.Numeric.Implicits._
  * Creation date: 17.08.2016
  * Copyright (c) harati
  */
-object Vec3 {
+object Vec3 extends VectorFactory[Vec3]{
 
-  def apply[T: Numeric](c: Point3[T]): Vec3[T] = new Vec3[T](c)
-  def apply[T: Numeric](x: T, y: T, z: T): Vec3[T] = Vec3(Point3(x, y, z))
+  @inline def apply[T: Numeric](c: Point3[T]): Vec3[T] = new Vec3[T](c)
+  @inline def apply[T: Numeric](x: T, y: T, z: T): Vec3[T] = Vec3(Point3(x, y, z))
+
+  @inline def zero[T: Numeric] = {
+    val space = implicitly[Numeric[T]]
+    Vec3(space.zero, space.zero, space.zero)
+  }
+
+  @inline def one[T: Numeric] = {
+    val space = implicitly[Numeric[T]]
+    Vec3(space.one, space.one, space.one)
+  }
 
   implicit def incrementInt(f: Vec3[Int]): Vec3[Double] = Vec3d(f.x, f.y, f.z)
   implicit def incrementFloat(f: Vec3[Float]): Vec3[Double] = Vec3d(f.x, f.y, f.z)
@@ -33,7 +43,6 @@ class Vec3[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point
   def -(c: Vec3[T]) = Vec3(x - c.x, y - c.y, z - c.z)
 
   def *(f: T) = Vec3(f * x, f * y, f * z)
-  def *(f: Double) = Vec3d(x.toDouble() * f, y.toDouble() * f, z.toDouble * f)
   def unary_- = Vec3(-x, -y, -z)
 
   /**

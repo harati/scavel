@@ -13,7 +13,7 @@ object Point2d {
   implicit def shrink(f: Point2[Double]): Point2d = f.toDoublePoint
 }
 
-class Point2d(x: Double, y: Double) extends Point2[Double](x, y) {
+final class Point2d(x: Double, y: Double) extends Point2[Double](x, y) {
   /**
    * Required for distance measurement/etc
    */

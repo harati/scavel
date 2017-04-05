@@ -13,9 +13,12 @@ object Vec2d {
     def *(c: Vec2d) = c * f
   }
 
+  val zero = Vec2d(0, 0)
+  val one = Vec2d(1, 1)
+
 }
 
-class Vec2d(carrier: Point2d) extends Vec2[Double](carrier) {
+final class Vec2d(carrier: Point2d) extends Vec2[Double](carrier) {
 
   override def +(c: Vec2[Double]): Vec2d = Vec2d(x + c.x, y + c.y)
   override def -(c: Vec2[Double]): Vec2d = Vec2d(x - c.x, y - c.y)

@@ -1,6 +1,6 @@
 name := "scavel"
 
-version := "0.1.1"
+version := "0.1.2"
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
