@@ -96,6 +96,8 @@ object BasicTypes {
     override def abs(value: Long): Long = Math.abs(value)
     override def compare(x: Long, y: Long): Int = scala.math.Ordering.Long.compare(x, y)
   }
+
+
 }
 
 trait BasicTypes

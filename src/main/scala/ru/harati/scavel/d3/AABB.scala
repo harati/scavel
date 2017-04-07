@@ -1,7 +1,7 @@
 package ru.harati.scavel.d3
 
 import ru.harati.scavel.BasicTypes.{isMultiplicable, isSubtractive}
-import ru.harati.scavel.Operations.{CollectionTranslation, hasPlainDimension}
+import ru.harati.scavel.Operations.{CollectionFlatTranslation, CollectionTranslation, hasPlainDimension}
 import ru.harati.scavel.Shape.{hasIntersection, isContain, isIntersects}
 import ru.harati.scavel.d2.Point2
 import ru.harati.scavel.{BasicTypes, SelfPointed, Shape}

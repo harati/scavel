@@ -29,6 +29,8 @@ object Vec2 extends SelfPointed with MappableCollection[Vec2] with hasLength[Vec
     Vec2(ord.max(self.x, that.x), ord.max(self.y, that.y))
 
   override def fold[T, R](data: Vec3[T], initial: R, trans: (R, T) => R): R = trans(trans(initial, data.x), data.y)
+
+  implicit def box[T](value: T): Vec2[T] = Vec2(value, value)
 }
 
 class Vec2[@specialized(Int, Long, Float, Double) T](coordinates: Point2[T]) extends Vec[T] {

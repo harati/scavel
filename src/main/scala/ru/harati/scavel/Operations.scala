@@ -87,8 +87,14 @@ object Operations {
   }
 
   trait CollectionTranslation[Q[_], R[_]] { def drive[T](self: Q[T], other: R[T])(implicit sub: isAdditive[T]): Q[T] }
+  trait CollectionFlatTranslation[Q[_]] { def drive[T](self: Q[T], other: T)(implicit sub: isAdditive[T]): Q[T] }
   implicit class UniversalCollectionTranslation[T, Q[_]](val data: Q[T]) extends AnyVal {
-    def +>[R[_]](other: R[T])(implicit tr: CollectionTranslation[Q, R], sub: isAdditive[T]): Q[T] = tr.drive[T](data, other)
+    def +>[R[_] <: Vec[_]](other: R[T])(implicit tr: CollectionTranslation[Q, R], sub: isAdditive[T]): Q[T] = tr.drive[T](data, other)
+    def +>(other: T)(implicit tr: CollectionFlatTranslation[Q], sub: isAdditive[T]) = tr.drive(data, other)
+    def <+[R[_] <: Vec[_]](other: R[T])(implicit tr: CollectionTranslation[Q, R], sub: isAdditive[T],
+      mapper: MappableCollection[R], negative: hasNegative[T]): Q[T] = tr.drive[T](data, -other)
+    def <+(other: T)(implicit tr: CollectionFlatTranslation[Q], neg: hasNegative[T], add: isAdditive[T]) =
+      tr.drive[T](data, neg.negate(other))
   }
 
 }

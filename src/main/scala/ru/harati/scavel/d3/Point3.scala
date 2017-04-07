@@ -4,7 +4,7 @@ import ru.harati.scavel.BasicTypes.{hasZero, isAdditive, isSubtractive}
 import ru.harati.scavel.{Operations, Point, SelfPointed}
 import ru.harati.scavel.Point.OutboundSubtractive
 import ru.harati.scavel.d2.{Point2, Vec2}
-import ru.harati.scavel.Operations.{CollectionTranslation, MappableCollection, hasDistanceCC, hasPlainDimension, isComparableCollection, isFoldableCollection}
+import ru.harati.scavel.Operations.{CollectionFlatTranslation, CollectionTranslation, MappableCollection, hasDistanceCC, hasPlainDimension, isComparableCollection, isFoldableCollection}
 
 /**
  * Created by loki on 06.04.2017.
@@ -38,6 +38,13 @@ object Point3 extends hasPlainDimension[Point3] with MappableCollection[Point3] 
     override def distance(self: Point3[Double], that: Point3[Double]): Double =
       Math.sqrt(Math.pow(self.x - that.x, 2) + Math.pow(self.y - that.y, 2) + Math.pow(self.z - that.z, 2))
   }
+
+  implicit object flatTranslateOffset extends CollectionFlatTranslation[Point3] {
+    override def drive[T](self: Point3[T], other: T)(implicit sub: isAdditive[T]): Point3[T] =
+      Point3(sub.plus(self.x, other), sub.plus(self.y, other), sub.plus(self.z, other))
+  }
+
+  implicit def box[T](value: T): Vec3[T] = Vec3(value, value, value)
 }
 
 class Point3[@specialized(Int, Long, Float, Double) T](val x: T, val y: T, val z: T) extends Point[T] {
