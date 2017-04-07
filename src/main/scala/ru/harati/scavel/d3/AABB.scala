@@ -1,82 +1,61 @@
 package ru.harati.scavel.d3
 
-import ru.harati.scavel.{AbstractPoint, AttachedSpace, Shape}
-import ru.harati.scavel.d2.{Point2, Point2d}
+import ru.harati.scavel.BasicTypes.{isMultiplicable, isSubtractive}
+import ru.harati.scavel.Operations.{CollectionTranslation, hasPlainDimension}
+import ru.harati.scavel.Shape.{hasIntersection, isContain, isIntersects}
+import ru.harati.scavel.d2.Point2
+import ru.harati.scavel.{BasicTypes, SelfPointed, Shape}
+import ru.harati.scavel.d3.Shape3.hasVolume
 
-import scala.math.Numeric.Implicits._
+import scala.math.Ordering.Implicits
 
 /**
- * Creation date: 17.08.2016
- * Copyright (c) harati
+ * Created by loki on 06.04.2017.
  */
-object AABB {
+object AABB extends SelfPointed with hasVolume[AABB] with isIntersects[AABB, AABB] with hasIntersection[AABB, AABB, AABB] with CollectionTranslation[AABB, Vec3] {
 
-  def apply[T: Fractional](a: Point3[T], b: Point3[T]) = new AABB[T](a, b)
+  import BasicTypes._
+
+  @inline def apply[T](a: Point3[T], b: Point3[T])(implicit ord: Ordering[T]): AABB[T] = {
+    val min = a min b
+    val max = a max b
+    new AABB(min, max)
+  }
+
+  override def volume[T](data: AABB[T])(implicit sub: isSubtractive[T], mul: isMultiplicable[T], neg: hasNegative[T]): T =
+    neg.abs((data.max.x - data.min.x) * (data.max.y - data.min.y) * (data.max.z - data.min.z))
+
+  implicit object ContainPoint3 extends isContain[AABB, Point3] {
+    override def contain[T](self: AABB[T], obj: Point3[T])(implicit cmp: Ordering[T]): Boolean =
+      cmp.lt(obj.x, self.max.x) && cmp.lt(obj.y, self.max.y) && cmp.lt(obj.z, self.max.z) &&
+        cmp.gt(obj.x, self.min.x) && cmp.gt(obj.y, self.min.y) && cmp.gt(obj.z, self.min.z)
+  }
+
+  implicit object ContainPoint2 extends isContain[AABB, Point2] {
+    override def contain[T](self: AABB[T], obj: Point2[T])(implicit cmp: Ordering[T]): Boolean =
+      cmp.lt(obj.x, self.max.x) && cmp.lt(obj.y, self.max.y) &&
+        cmp.gt(obj.x, self.min.x) && cmp.gt(obj.y, self.min.y)
+  }
+
+  override def intersects[T](shape: AABB[T], sec: AABB[T])(implicit cmp: Ordering[T]): Boolean = cmp.lt(cmp.max(shape.min.x, sec.min.x), cmp.min(shape.max.x, sec.max.x)) &&
+    cmp.lt(cmp.max(shape.min.y, sec.min.y), cmp.min(shape.max.y, sec.max.y)) &&
+    cmp.lt(cmp.max(shape.min.z, sec.min.z), cmp.min(shape.max.z, sec.max.z))
+
+  override def intersection[T](self: AABB[T], that: AABB[T])(implicit cmp: Ordering[T]): AABB[T] =
+    AABB(self.min max that.min, self.max min that.max)
+
+  override def drive[T](self: AABB[T], other: Vec3[T])(implicit sub: isAdditive[T]): AABB[T] =
+    AABB[T](self.min +> other, self.max +> other)(self.ord)
 
 }
 
-class AABB[@specialized(Int, Long, Float, Double) T: Fractional](a: Point3[T], b: Point3[T]) extends Shape with AttachedSpace[T] {
+final class AABB[@specialized(Int, Long, Float, Double) T] private (val min: Point3[T], val max: Point3[T])(implicit val ord: Ordering[T]) extends Shape3 {
 
-  override protected def space: Fractional[T] = implicitly[Fractional[T]]
-
-  val min = a min b
-  val max = a max b
-
-  def center = {
-    val x = space.div(space.plus(min.x, max.x), space.fromInt(2))
-    val y = space.div(space.plus(min.y, max.y), space.fromInt(2))
-    val z = space.div(space.plus(min.z, max.z), space.fromInt(2))
-    Point3[T](x, y, z)
+  override def hashCode(): Int = 1488 + 31 * (31 * min.hashCode() + max.hashCode())
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case f: AABB[_] => f.min == min && f.max == max
+    case _ => false
   }
 
-  /**
-   * Contains given point, border excluded
-   */
-  override def contains(f: AbstractPoint): Boolean = f match {
-    case p: Point2[_] => contains(p.toDoublePoint)
-    case p: Point3[_] => contains(p.toDoublePoint)
-    case _            => false
-  }
-
-  def contains(f: Point2d): Boolean =
-    if (f.dimension != dimension) false
-    else contains(Point3d(f.x, f.y, 0))
-
-  /**
-   * Inclusive contains
-   */
-  def contains(f: Point3d): Boolean =
-    (min.x.toDouble <= f.x) && (min.y.toDouble <= f.y) && (min.z.toDouble <= f.z) &&
-      (f.x <= max.x.toDouble) && (f.y <= max.y.toDouble) && (f.y <= max.y.toDouble)
-
-  def intersection(other: AABB[T]) = AABB(min max other.min, max min other.max)
-  def intersects(other: AABB[T]) =
-    space.lt(space.max(min.x, other.min.x), space.min(max.x, other.max.x)) &&
-      space.lt(space.max(min.y, other.min.y), space.min(max.y, other.max.y)) &&
-      space.lt(space.max(min.z, other.min.z), space.min(max.z, other.max.z))
-
-  /**
-   * Extend AABB for given value to all directions
-   */
-  def extend(offset: T) = {
-    val driver = Vec3[T](offset, offset, offset)
-    AABB(min - driver, max + driver)
-  }
-
-  def +(driver: Vec3[T]) = AABB(min + driver, max + driver)
-
-  /**
-   * AABB is point
-   */
-  def isEmpty = min == max
-
-  /**
-   * Actual volume of AABB, for empty AABB should be zero
-   */
-  def volume = (max.x - min.x) * (max.y - min.y) * (max.z - min.z)
-
-  /**
-   * Real dimension of object
-   */
-  override def dimension: Int = Math.max(min.dimension, max.dimension)
+  override def toString: String = s"AABB(min=(${min.x}, ${min.y}, ${min.z}), max=(${max.x}, ${max.y}, ${max.z}))"
 }

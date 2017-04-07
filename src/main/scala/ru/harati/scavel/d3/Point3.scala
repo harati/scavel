@@ -1,85 +1,54 @@
 package ru.harati.scavel.d3
 
-import ru.harati.scavel.{AbstractPoint, Point}
-import ru.harati.scavel.d2.Point2
-
-import scala.math.Numeric.Implicits._
+import ru.harati.scavel.BasicTypes.{hasZero, isAdditive, isSubtractive}
+import ru.harati.scavel.{Operations, Point, SelfPointed}
+import ru.harati.scavel.Point.OutboundSubtractive
+import ru.harati.scavel.d2.{Point2, Vec2}
+import ru.harati.scavel.Operations.{CollectionTranslation, MappableCollection, hasDistanceCC, hasPlainDimension, isComparableCollection, isFoldableCollection}
 
 /**
- * Creation date: 17.08.2016
- * Copyright (c) harati
+ * Created by loki on 06.04.2017.
  */
-object Point3 {
+object Point3 extends hasPlainDimension[Point3] with MappableCollection[Point3] with isFoldableCollection[Point3]
+  with OutboundSubtractive[Point3, Vec3] with CollectionTranslation[Point3, Vec3] with isComparableCollection[Point3] with SelfPointed {
+  def apply[T](a: T, b: T, c: T) = new Point3(a, b, c)
 
-  def apply[T: Numeric](x: T, y: T, z: T) = new Point3[T](x, y, z)
+  override def dimension[T](data: Point3[T])(implicit field: hasZero[T]): Int = {
+    val zero = implicitly[hasZero[T]].zero
+    var acc = 0
+    if (zero != data.x) acc += 1
+    if (zero != data.y) acc += 1
+    if (zero != data.z) acc += 1
+    acc
+  }
+  override def map[T, R](data: Point3[T], function: (T) => R): Point3[R] = Point3(function(data.x), function(data.y), function(data.z))
+  override def fold[T, R](data: Point3[T], initial: R, trans: (R, T) => R): R = trans(trans(trans(initial, data.x), data.y), data.z)
+  override def subtract[T](self: Point3[T], other: Point3[T])(implicit sub: isSubtractive[T]): Vec3[T] =
+    Vec3(sub.minus(self.x, other.x), sub.minus(self.y, other.y), sub.minus(self.z, other.z))
 
-  implicit def shrink(f: Point3[Double]): Point3d = f.toDoublePoint
+  override def drive[T](self: Point3[T], other: Vec3[T])(implicit sub: isAdditive[T]): Point3[T] =
+    Point3(sub.plus(self.x, other.x), sub.plus(self.y, other.y), sub.plus(self.z, other.z))
 
+  override def min[T](self: Point3[T], that: Point3[T])(implicit ord: Ordering[T]): Point3[T] =
+    Point3(ord.min(self.x, that.x), ord.min(self.y, that.y), ord.min(self.z, that.z))
+  override def max[T](self: Point3[T], that: Point3[T])(implicit ord: Ordering[T]): Point3[T] =
+    Point3(ord.max(self.x, that.x), ord.max(self.y, that.y), ord.max(self.z, that.z))
+
+  implicit object toPoint3DDistance extends hasDistanceCC[Point3, Double, Point3, Double, Double] {
+    override def distance(self: Point3[Double], that: Point3[Double]): Double =
+      Math.sqrt(Math.pow(self.x - that.x, 2) + Math.pow(self.y - that.y, 2) + Math.pow(self.z - that.z, 2))
+  }
 }
 
-class Point3[@specialized(Int, Long, Float, Double) T: Numeric](val x: T, val y: T, val z: T) extends Point[T] {
+class Point3[@specialized(Int, Long, Float, Double) T](val x: T, val y: T, val z: T) extends Point[T] {
 
-  /**
-   * Assuming always double
-   */
-  override def distance(f: AbstractPoint): Double = f match {
-    case f: Point2[_] => f.toDoublePoint.distance(f)
-    case f: Point3[_] => f.toDoublePoint.distance(f)
-    case p            => p.distance(this)
+  override def hashCode(): Int = 31 * ((31 + x.hashCode()) + y.hashCode()) + z.hashCode()
+
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case other: Point3[_] => other.x == x && other.y == y && other.z == z
+    case _ => false
   }
 
-  /**
-   * Required for distance measurement/etc
-   */
-  override def toDoublePoint: Point3d = Point3d(x.toDouble, y.toDouble, z.toDouble)
+  override def toString = s"Point3($x, $y, $z)"
 
-  /**
-   * If zero coordinate is zero - Some(_), otherwise None
-   */
-  def asPoint2: Option[Point2[T]] = if (implicitly[Numeric[T]].zero == z) Some(Point2[T](x, y)) else None
-
-  /**
-   * If all point coordinates satisfy predicate
-   */
-  override def is(f: (T) => Boolean): Boolean = f(x) && f(y) && f(z)
-
-  /**
-   * Real dimension of object
-   */
-  @inline override def dimension: Int = {
-    val zero = implicitly[Numeric[T]].zero
-    var sum = 0
-    if (x != zero) sum += 1
-    if (y != zero) sum += 1
-    if (z != zero) sum += 1
-    sum
-  }
-
-  /**
-   * Find min/max foreach coordinate of points
-   */
-  def min(o: Point3[T]) = Point3[T](space.min(x, o.x), space.min(y, o.y), space.min(z, o.z))
-  def max(o: Point3[T]) = Point3[T](space.max(x, o.x), space.max(y, o.y), space.max(z, o.z))
-
-  /**
-   * Some translation
-   */
-  def +(driver: Vec3[T]) = Point3[T](x + driver.x, y + driver.y, z + driver.z)
-  def -(driver: Vec3[T]) = Point3[T](x - driver.x, y - driver.y, z - driver.z)
-  def +(driver: T) = Point3[T](x + driver, y + driver, z + driver)
-  def -(driver: T) = Point3[T](x - driver, y - driver, z - driver)
-
-  override def hashCode(): Int = (x.hashCode() + 31 * y.hashCode()) * 31 + z.hashCode()
-
-  override def toString: String = s"Point($x, $y, $z)"
-
-  /**
-   * Build vector by two points
-   */
-  override def -(other: Point[T]): Vec3[T] = other match {
-    case p: Point2[T] => Vec3[T](Point3[T](x - p.x, y - p.y, z))
-    case p: Point3[T] => Vec3[T](Point3[T](x - p.x, y - p.y, z - p.z))
-  }
-
-  override def toRadiusVector: Vec3[T] = Vec3[T](x, y, z)
 }

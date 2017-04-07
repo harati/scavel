@@ -1,71 +1,40 @@
 package ru.harati.scavel.d3
 
-import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
-import ru.harati.scavel.{Axis, VectorFactory, Vector}
-import ru.harati.scavel.d2.{Vec2, Vec2d}
-
-import scala.math.Numeric.Implicits._
+import ru.harati.scavel.BasicTypes.{hasZero, isAdditive}
+import ru.harati.scavel.{Operations, SelfPointed, Vec}
+import ru.harati.scavel.d2.{Point2, Vec2}
+import ru.harati.scavel.Operations.{AdditiveCollection, hasPlainDimension, MappableCollection, hasLength, isComparableCollection}
 
 /**
- * Creation date: 17.08.2016
- * Copyright (c) harati
- */
-object Vec3 extends VectorFactory[Vec3]{
+  * Created by loki on 06.04.2017.
+  */
+object Vec3 extends SelfPointed with MappableCollection[Vec3] with hasLength[Vec3] with AdditiveCollection[Vec3] with hasPlainDimension[Vec3] with isComparableCollection[Vec3]{
 
-  @inline def apply[T: Numeric](c: Point3[T]): Vec3[T] = new Vec3[T](c)
-  @inline def apply[T: Numeric](x: T, y: T, z: T): Vec3[T] = Vec3(Point3(x, y, z))
+  def apply[T](carrier: Point3[T]): Vec3[T] = new Vec3[T](carrier)
+  def apply[T](a: T, b: T, c : T): Vec3[T] = Vec3(Point3(a, b, c))
 
-  @inline def zero[T: Numeric] = {
-    val space = implicitly[Numeric[T]]
-    Vec3(space.zero, space.zero, space.zero)
+  override def map[T, R](data: Vec3[T], function: (T) => R): Vec3[R] = Vec3(function(data.x), function(data.y), function(data.z))
+  override def plus[T](a: Vec3[T], b: Vec3[T])(implicit additive: isAdditive[T]): Vec3[T] =
+    Vec3(additive.plus(a.x, b.x), additive.plus(a.y, b.y), additive.plus(a.z, b.z))
+  override def dimension[T](data: Vec3[T])(implicit field: hasZero[T]): Int = data.carrier.dimension
+  override def length[T](data: Vec3[T])(implicit fractional: Fractional[T]): Double = {
+    val x = fractional.toDouble(data.x)
+    val y = fractional.toDouble(data.y)
+    val z = fractional.toDouble(data.z)
+    Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))
   }
 
-  @inline def one[T: Numeric] = {
-    val space = implicitly[Numeric[T]]
-    Vec3(space.one, space.one, space.one)
-  }
-
-  implicit def incrementInt(f: Vec3[Int]): Vec3[Double] = Vec3d(f.x, f.y, f.z)
-  implicit def incrementFloat(f: Vec3[Float]): Vec3[Double] = Vec3d(f.x, f.y, f.z)
-  implicit def incrementIntL(f: Vec3[Int]): Vec3[Long] = Vec3[Long](f.x, f.y, f.z)
-
+  override def min[T](self: Vec3[T], that: Vec3[T])(implicit ord: Ordering[T]): Vec3[T] =
+    Vec3(ord.min(self.x, that.x), ord.min(self.y, that.y), ord.min(self.z, that.z))
+  override def max[T](self: Vec3[T], that: Vec3[T])(implicit ord: Ordering[T]): Vec3[T] =
+    Vec3(ord.max(self.x, that.x), ord.max(self.y, that.y), ord.max(self.z, that.z))
 }
 
-class Vec3[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point3[T]) extends Vector[T] {
+class Vec3[@specialized(Int, Long, Float, Double) T](coordinates: Point3[T]) extends Vec[T] {
+  @inline override def carrier: Point3[T] = coordinates
+  @inline def x: T = carrier.x
+  @inline def y: T = carrier.y
+  @inline def z: T = carrier.z
 
-  @inline def x = carrier.x
-  @inline def y = carrier.y
-  @inline def z = carrier.z
-
-  override def length: Double = Math.sqrt(Math.pow(x.toDouble(), 2) + Math.pow(x.toDouble(), 2) + Math.pow(z.toDouble(), 2))
-
-  def +(c: Vec3[T]) = Vec3(x + c.x, y + c.y, z + c.z)
-  def -(c: Vec3[T]) = Vec3(x - c.x, y - c.y, z - c.z)
-
-  def *(f: T) = Vec3(f * x, f * y, f * z)
-  def unary_- = Vec3(-x, -y, -z)
-
-  /**
-   * Scalar product
-   */
-  @inline def *(f: Vec3[T]): T = x * f.x + y * f.y + z * f.z
-
-  /**
-   * Angle between vectors
-   */
-  def angle(another: Vec3[T]): Double = Math.acos((this * another).toDouble() / (length * another.length))
-
-  /**
-   * Project vector to axis
-   */
-  def apply(f: Axis): Vec3[T] with AxisProjection[T] = {
-    val zero = implicitly[Numeric[T]].zero
-    f match {
-      case X => new Vec3[T](Point3[T](carrier.x, zero, zero)) with AxisProjection[T] { def value = carrier.x }
-      case Y => new Vec3[T](Point3[T](zero, carrier.y, zero)) with AxisProjection[T] { def value = carrier.y }
-      case Z => new Vec3[T](Point3[T](zero, zero, carrier.z)) with AxisProjection[T] { def value = carrier.z }
-    }
-  }
-
-  override def toString: String = s"Vec(${carrier.x}, ${carrier.y}, ${carrier.z})"
+  override def toString = s"Vec3($x, $y, $z)"
 }

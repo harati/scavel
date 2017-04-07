@@ -1,76 +1,36 @@
 package ru.harati.scavel.d2
 
-import ru.harati.scavel.Axis.{AxisProjection, X, Y, Z}
-import ru.harati.scavel.{Axis, Point, VectorFactory, Vector}
-
-import scala.math.Numeric.Implicits._
-import ru.harati.scavel.Tolerance._
-import ru.harati.scavel.d3.Point3
+import ru.harati.scavel.BasicTypes.{hasZero, isAdditive}
+import ru.harati.scavel.Operations.{AdditiveCollection, hasPlainDimension, MappableCollection, hasLength, isComparableCollection}
+import ru.harati.scavel.{Operations, Point, SelfPointed, Vec}
 
 /**
- * Creation date: 17.08.2016
- * Copyright (c) harati
+ * Created by loki on 06.04.2017.
  */
-object Vec2 extends VectorFactory[Vec2]{
+object Vec2 extends SelfPointed with MappableCollection[Vec2] with hasLength[Vec2] with AdditiveCollection[Vec2] with hasPlainDimension[Vec2] with isComparableCollection[Vec2] {
 
-  def apply[T: Numeric](c: Point2[T]): Vec2[T] = new Vec2[T](c)
-  def apply[T: Numeric](x: T, y: T): Vec2[T] = Vec2(Point2(x, y))
+  def apply[T](carrier: Point2[T]): Vec2[T] = new Vec2[T](carrier)
+  def apply[T](a: T, b: T): Vec2[T] = Vec2(Point2(a, b))
 
-  @inline def zero[T: Numeric] = {
-    val space = implicitly[Numeric[T]]
-    Vec2(space.zero, space.zero)
+  override def map[T, R](data: Vec2[T], function: (T) => R): Vec2[R] = Vec2(function(data.x), function(data.y))
+  override def plus[T](a: Vec2[T], b: Vec2[T])(implicit additive: isAdditive[T]): Vec2[T] = Vec2(additive.plus(a.x, b.x), additive.plus(a.y, b.y))
+  override def dimension[T](data: Vec2[T])(implicit field: hasZero[T]): Int = data.carrier.dimension
+  override def length[T](data: Vec2[T])(implicit fractional: Fractional[T]): Double = {
+    val a = fractional.toDouble(data.x)
+    val b = fractional.toDouble(data.y)
+    Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2))
   }
 
-  @inline def one[T: Numeric] = {
-    val space = implicitly[Numeric[T]]
-    Vec2(space.one, space.one)
-  }
-
+  override def min[T](self: Vec2[T], that: Vec2[T])(implicit ord: Ordering[T]): Vec2[T] =
+    Vec2(ord.min(self.x, that.x), ord.min(self.y, that.y))
+  override def max[T](self: Vec2[T], that: Vec2[T])(implicit ord: Ordering[T]): Vec2[T] =
+    Vec2(ord.max(self.x, that.x), ord.max(self.y, that.y))
 }
 
-class Vec2[@specialized(Int, Long, Float, Double) T: Numeric](val carrier: Point2[T]) extends Vector[T] {
+class Vec2[@specialized(Int, Long, Float, Double) T](coordinates: Point2[T]) extends Vec[T] {
+  @inline override def carrier: Point2[T] = coordinates
+  @inline def x: T = carrier.x
+  @inline def y: T = carrier.y
 
-  @inline def x = carrier.x
-  @inline def y = carrier.y
-
-  override def length: Double = Math.hypot(x.toDouble, y.toDouble)
-
-  def +(c: Vec2[T]) = Vec2(x + c.x, y + c.y)
-  def -(c: Vec2[T]) = Vec2(x - c.x, y - c.y)
-
-  def *(f: T) = Vec2(f * x, f * y)
-  def unary_- = Vec2(-x, -y)
-
-  /**
-   * Scalar product
-   */
-  @inline def *(f: Vec2[T]): T = x * f.x + y * f.y
-
-  /**
-   * Angle between vectors
-   */
-  def angle(another: Vec2[T]): Double = Math.acos((this * another).toDouble() / (length * another.length))
-
-  /**
-   * Project this vector to vector @f
-   */
-  def apply(f: Vec2[T]): Vec2d = {
-    val scalar = (this * f).toDouble()
-    val norm = scalar / Math.pow(f.length, 2)
-    Vec2d(x.toDouble() * norm, y.toDouble() * norm)
-  }
-
-  /**
-   * Project vector to axis
-   */
-  def apply(f: Axis): Vec2[T] with AxisProjection[T] = {
-    val zero = implicitly[Numeric[T]].zero
-    f match {
-      case X => new Vec2[T](Point2[T](carrier.x, zero)) with AxisProjection[T] { def value = carrier.x }
-      case Y => new Vec2[T](Point2[T](zero, carrier.y)) with AxisProjection[T] { def value = carrier.y }
-      case Z => new Vec2[T](Point2[T](zero, zero)) with AxisProjection[T] { def value = zero }
-    }
-  }
-
-  override def toString: String = s"Vec(${carrier.x}, ${carrier.y})"
+  override def toString = s"Vec2($x, $y)"
 }

@@ -1,21 +1,29 @@
 package ru.harati.scavel
 
+import ru.harati.scavel.BasicTypes.{hasNegative, isMultiplicable, isSubtractive}
+
 /**
- * Creation date: 17.08.2016
- * Copyright (c) harati
- *
- * Any geometrical shape
+ * Created by loki on 06.04.2017.
  */
-trait Shape {
+object Shape {
 
-  /**
-   * Contains given point, border excluded
-   */
-  def contains(f: AbstractPoint): Boolean
+  trait isContain[Q[_], R[_]] { def contain[T](self: Q[T], obj: R[T])(implicit cmp: Ordering[T]): Boolean }
+  implicit class UniversalContain[Q[_], T](val data: Q[T]) extends AnyVal {
+    def contain[R[_]](obj: R[T])(implicit c: isContain[Q, R], cmp: Ordering[T]): Boolean = c.contain[T](data, obj)
+  }
 
-  /**
-   * Real dimension of object
-   */
-  def dimension: Int
+  trait isIntersects[Q[_], R[_]] { def intersects[T](self: Q[T], that: R[T])(implicit cmp: Ordering[T]): Boolean }
+  implicit class UniversalIntersects[Q[_], T](val data: Q[T]) extends AnyVal {
+    def intersects[R[_]](that: R[T])(implicit int: isIntersects[Q, R], cmp: Ordering[T]) = int.intersects(data, that)
+  }
+
+  trait hasIntersection[Q[_], A[_], R[_]] { def intersection[T](self: Q[T], that: A[T])(implicit cmp: Ordering[T]): R[T] }
+  implicit class UniversalIntersection[Q[_], T](val data: Q[T]) extends AnyVal {
+    def intersection[A[_], R[_]](that: A[T])(implicit int: hasIntersection[Q, A, R], cmp: Ordering[T]): R[T] = int.intersection(data, that)
+  }
+
+}
+
+trait Shape extends Operations {
 
 }
