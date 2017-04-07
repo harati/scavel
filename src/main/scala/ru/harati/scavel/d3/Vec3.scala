@@ -3,12 +3,13 @@ package ru.harati.scavel.d3
 import ru.harati.scavel.BasicTypes.{hasZero, isAdditive}
 import ru.harati.scavel.{Operations, SelfPointed, Vec}
 import ru.harati.scavel.d2.{Point2, Vec2}
-import ru.harati.scavel.Operations.{AdditiveCollection, hasPlainDimension, MappableCollection, hasLength, isComparableCollection}
+import ru.harati.scavel.Operations.{AdditiveCollection, MappableCollection, hasLength, hasPlainDimension, isComparableCollection, isFoldableCollection}
 
 /**
   * Created by loki on 06.04.2017.
   */
-object Vec3 extends SelfPointed with MappableCollection[Vec3] with hasLength[Vec3] with AdditiveCollection[Vec3] with hasPlainDimension[Vec3] with isComparableCollection[Vec3]{
+object Vec3 extends SelfPointed with MappableCollection[Vec3] with hasLength[Vec3] with AdditiveCollection[Vec3]
+  with hasPlainDimension[Vec3] with isComparableCollection[Vec3] with isFoldableCollection[Vec3]{
 
   def apply[T](carrier: Point3[T]): Vec3[T] = new Vec3[T](carrier)
   def apply[T](a: T, b: T, c : T): Vec3[T] = Vec3(Point3(a, b, c))
@@ -28,6 +29,8 @@ object Vec3 extends SelfPointed with MappableCollection[Vec3] with hasLength[Vec
     Vec3(ord.min(self.x, that.x), ord.min(self.y, that.y), ord.min(self.z, that.z))
   override def max[T](self: Vec3[T], that: Vec3[T])(implicit ord: Ordering[T]): Vec3[T] =
     Vec3(ord.max(self.x, that.x), ord.max(self.y, that.y), ord.max(self.z, that.z))
+
+  override def fold[T, R](data: Vec3[T], initial: R, trans: (R, T) => R): R = trans(trans(trans(initial, data.x), data.y), data.z)
 }
 
 class Vec3[@specialized(Int, Long, Float, Double) T](coordinates: Point3[T]) extends Vec[T] {
