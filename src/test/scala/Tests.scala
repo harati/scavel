@@ -48,30 +48,12 @@ class Tests extends FlatSpec with Matchers {
     box intersects AABB(Point3[Double](5, 5, 5), Point3[Double](10, 12, 17)) shouldBe false
     box +> Vec3[Double](1, 1, 1) shouldBe AABB[Double](Point3(2, 2, 2), Point3(1.5, 5, 5))
     (box center) shouldBe Point3(0.75, 2.5, 2.5)
+    AABB(Point3[Double](0, 0, 0), Point3[Double](0, 0, 0)).isPoint shouldBe true
+    AABB(Point3[Double](0, 0, 4), Point3[Double](0, 0, 0)).isPoint shouldBe false
+    AABB(Point3[Double](4, 5, 0), Point3[Double](1, 3, 0)).isPlane shouldBe true
+    AABB(Point3[Double](4, 5, 0), Point3[Double](1, 3, 1)).isPlane shouldBe false
+    AABB(Point3[Double](4, 0, 0), Point3[Double](1, 0, 0)).isSegment shouldBe true
+    AABB(Point3[Double](4, 0, 0), Point3[Double](1, 3, 0)).isSegment shouldBe false
   }
-
-  /*"Vectors" should "have correct creation and comparison" in {
-    Vec3(3, 2, 1) shouldBe Vec3(Point3(3, 2, 1))
-    Vec2(1, 5) should be(Vec3(1, 5, 0))
-    Vec3(1, 2, 3) should be(Vec3(1D, 2D, 3D))
-  }
-
-  "Vectors" should "be able to do simple algebra" in {
-    val a = Vec3(3, 4, 5)
-    val b = Vec3(1, 2, 3)
-    (a + b) + (a - b) should be(2 * a)
-  }
-
-  "Vectors" should "determine correct dimension after mathematics" in {
-    val a = Vec3(0, -7, 5)
-    val b = Vec2(1, 2)
-    a.dimension should be(2)
-    b.dimension should be(2)
-    (a + Vec3(1, 2, 3)).dimension should be(3)
-  }
-
-  "AABB" should "have correct center" in {
-    AABB(Point3d(4, 6, 1), Point3d(0, -2, -1)).center should be(Point3d(2, 2, 0))
-  }*/
 
 }
