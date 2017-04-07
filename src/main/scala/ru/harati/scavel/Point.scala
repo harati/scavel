@@ -1,6 +1,10 @@
 package ru.harati.scavel
 
 import ru.harati.scavel.BasicTypes.{isAdditive, isSubtractive}
+import ru.harati.scavel.d2.{Point2, Vec2}
+import ru.harati.scavel.d3.{Point3, Vec3}
+
+import scala.language.higherKinds
 
 /**
  * Created by loki on 06.04.2017.
@@ -12,6 +16,10 @@ object Point {
     def -[R[_] <: Vec[_]](other: Q[T])(implicit out: OutboundSubtractive[Q, R], sub: isSubtractive[T]): R[T] = out.subtract(data, other)
   }
 
+  type Point2i = Point2[Int]
+  type Point2d = Point2[Double]
+  type Point3d = Point3[Double]
+  type Point3i = Point3[Int]
 
 
 }

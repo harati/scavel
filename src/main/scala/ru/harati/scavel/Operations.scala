@@ -1,6 +1,6 @@
 package ru.harati.scavel
 
-import ru.harati.scavel.BasicTypes.{SafeCast, hasNegative, hasZero, isAdditive, isMultiplicable}
+import ru.harati.scavel.BasicTypes.{SafeCast, hasNegative, hasOne, hasZero, isAdditive, isMultiplicable}
 
 import scala.language.higherKinds
 
@@ -36,6 +36,8 @@ object Operations {
   trait isFoldableCollection[Q[_]] { def fold[T, R](data: Q[T], initial: R, trans: (R, T) => R): R }
   implicit class UniversalFoldableCollection[T, Q[_]](val data: Q[T]) extends AnyVal {
     def is(predicate: T => Boolean)(implicit foldable: isFoldableCollection[Q]) = fold[Boolean](true, (acc, value) => acc && predicate(value))
+    def isZero(implicit foldable: isFoldableCollection[Q], hz: hasZero[T]) = is(_ == hz.zero)
+    def isOne(implicit foldable: isFoldableCollection[Q], ho: hasOne[T]) = is(_ == ho.one)
     def fold[R](initial: R, trans: (R, T) => R)(implicit foldable: isFoldableCollection[Q]) = foldable.fold[T, R](data, initial, trans)
   }
 

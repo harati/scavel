@@ -49,7 +49,7 @@ object AABB extends SelfPointed with hasVolume[AABB] with isIntersects[AABB, AAB
 
 }
 
-final class AABB[@specialized(Int, Long, Float, Double) T] private (val min: Point3[T], val max: Point3[T])(implicit val ord: Ordering[T]) extends Shape3 {
+class AABB[@specialized(Int, Long, Float, Double) T] private (val min: Point3[T], val max: Point3[T])(implicit val ord: Ordering[T]) extends Shape3 {
 
   override def hashCode(): Int = 1488 + 31 * (31 * min.hashCode() + max.hashCode())
   override def equals(obj: scala.Any): Boolean = obj match {

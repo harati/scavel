@@ -1,9 +1,6 @@
 name := "scavel"
 
-version := "0.1.2"
-scalaVersion := "2.12.1"
-
-//scalacOptions in Compile += "-Xlog-implicits"
+version := "0.2.1"
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
@@ -26,7 +23,7 @@ pomExtra := {
   <developers>
     <developer>
       <id>harati</id>
-      <name>Kirill Lonhus</name>sho
+      <name>Kirill Lonhus</name>
       <url>https://github.com/harati</url>
     </developer>
   </developers>
