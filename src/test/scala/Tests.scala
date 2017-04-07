@@ -43,6 +43,7 @@ class Tests extends FlatSpec with Matchers {
     box intersects AABB(Point3[Double](-1, -1, -1), Point3[Double](5, 5, 5)) shouldBe true
     box intersects AABB(Point3[Double](5, 5, 5), Point3[Double](10, 12, 17)) shouldBe false
     box +> Vec3[Double](1, 1, 1) shouldBe AABB[Double](Point3(2, 2, 2), Point3(1.5, 5, 5))
+    (box center) shouldBe Point3(0.75, 2.5, 2.5)
   }
 
   /*"Vectors" should "have correct creation and comparison" in {

@@ -5,14 +5,15 @@ import ru.harati.scavel.Operations.{CollectionTranslation, hasPlainDimension}
 import ru.harati.scavel.Shape.{hasIntersection, isContain, isIntersects}
 import ru.harati.scavel.d2.Point2
 import ru.harati.scavel.{BasicTypes, SelfPointed, Shape}
-import ru.harati.scavel.d3.Shape3.hasVolume
+import ru.harati.scavel.d3.Shape3.{hasCenter, hasVolume}
 
 import scala.math.Ordering.Implicits
 
 /**
  * Created by loki on 06.04.2017.
  */
-object AABB extends SelfPointed with hasVolume[AABB] with isIntersects[AABB, AABB] with hasIntersection[AABB, AABB, AABB] with CollectionTranslation[AABB, Vec3] {
+object AABB extends SelfPointed with hasVolume[AABB] with isIntersects[AABB, AABB]
+  with hasIntersection[AABB, AABB, AABB] with CollectionTranslation[AABB, Vec3] with hasCenter[AABB] {
 
   import BasicTypes._
 
@@ -47,6 +48,12 @@ object AABB extends SelfPointed with hasVolume[AABB] with isIntersects[AABB, AAB
   override def drive[T](self: AABB[T], other: Vec3[T])(implicit sub: isAdditive[T]): AABB[T] =
     AABB[T](self.min +> other, self.max +> other)(self.ord)
 
+  override def center[T](data: AABB[T])(implicit ha: hasAverage[T]): Point3[T] =
+    Point3(
+      ha.average(data.min.x, data.max.x),
+      ha.average(data.min.y, data.max.y),
+      ha.average(data.min.z, data.max.z)
+    )
 }
 
 class AABB[@specialized(Int, Long, Float, Double) T] private (val min: Point3[T], val max: Point3[T])(implicit val ord: Ordering[T]) extends Shape3 {
