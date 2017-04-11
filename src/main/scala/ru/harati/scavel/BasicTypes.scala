@@ -9,6 +9,7 @@ object BasicTypes {
 
   trait hasZero[T] { def zero: T }
   trait hasOne[T] { def one: T }
+  trait hasInvert[T] {def invert(value: T): T}
 
   trait isAdditive[T] { def plus(a: T, b: T): T }
   implicit class UniversalAdditive[T](val data: T) extends AnyVal {
@@ -48,7 +49,7 @@ object BasicTypes {
   implicit def autoSafeCast[A, B](a: A)(implicit cast: SafeCast[A, B]) = cast.cast(a)
 
   implicit object DoubleField extends hasZero[Double] with hasOne[Double] with hasNegative[Double]
-    with isAdditive[Double] with isSubtractive[Double] with isMultiplicable[Double] with Ordering[Double] with hasAverage[Double] {
+    with isAdditive[Double] with isSubtractive[Double] with isMultiplicable[Double] with Ordering[Double] with hasAverage[Double] with hasInvert[Double]{
     override def zero: Double = 0
     override def one: Double = 1
     override def plus(a: Double, b: Double): Double = a + b
@@ -58,10 +59,11 @@ object BasicTypes {
     override def abs(value: Double): Double = Math.abs(value)
     override def compare(x: Double, y: Double): Int = scala.math.Ordering.Double.compare(x, y)
     override def average(a: Double, b: Double): Double = (a + b) / 2
+    override def invert(value: Double): Double = 1 / value
   }
 
   implicit object FloatField extends hasZero[Float] with hasOne[Float] with hasNegative[Float]
-    with isAdditive[Float] with isSubtractive[Float] with isMultiplicable[Float] with Ordering[Float] with hasAverage[Float] {
+    with isAdditive[Float] with isSubtractive[Float] with isMultiplicable[Float] with Ordering[Float] with hasAverage[Float] with hasInvert[Float]{
     override def zero: Float = 0
     override def one: Float = 1
     override def plus(a: Float, b: Float): Float = a + b
@@ -71,6 +73,7 @@ object BasicTypes {
     override def abs(value: Float): Float = Math.abs(value)
     override def compare(x: Float, y: Float): Int = scala.math.Ordering.Float.compare(x, y)
     override def average(a: Float, b: Float): Float = (a + b) / 2
+    override def invert(value: Float): Float = 1 / value
   }
 
   implicit object IntField extends hasZero[Int] with hasOne[Int] with hasNegative[Int]

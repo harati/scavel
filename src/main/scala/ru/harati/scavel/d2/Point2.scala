@@ -3,14 +3,14 @@ package ru.harati.scavel.d2
 import ru.harati.scavel.BasicTypes.{hasZero, isAdditive, isSubtractive}
 import ru.harati.scavel.Point.OutboundSubtractive
 import ru.harati.scavel.d3.{Point3, Vec3}
-import ru.harati.scavel.{Operations, Point, SelfPointed}
+import ru.harati.scavel.{Operations, Point, PrimitiveFactory, SelfPointed}
 import ru.harati.scavel.Operations.{AdditiveCollection, CollectionFlatTranslation, CollectionTranslation, MappableCollection, hasDistanceCC, hasPlainDimension, isComparableCollection, isFoldableCollection}
 
 /**
  * Created by loki on 06.04.2017.
  */
 object Point2 extends SelfPointed with hasPlainDimension[Point2] with MappableCollection[Point2] with isFoldableCollection[Point2] with OutboundSubtractive[Point2, Vec2]
-  with CollectionTranslation[Point2, Vec2] with isComparableCollection[Point2] {
+  with CollectionTranslation[Point2, Vec2] with isComparableCollection[Point2] with PrimitiveFactory[Point2] {
 
   def apply[T](a: T, b: T) = new Point2[T](a, b)
 
@@ -43,6 +43,8 @@ object Point2 extends SelfPointed with hasPlainDimension[Point2] with MappableCo
     override def drive[T](self: Point2[T], other: T)(implicit sub: isAdditive[T]): Point2[T] =
       Point2(sub.plus(self.x, other), sub.plus(self.y, other))
   }
+
+  override def fill[T](data: T): Point2[T] = Point2(data, data)
 }
 
 class Point2[@specialized(Int, Long, Float, Double) T](val x: T, val y: T) extends Point[T] {

@@ -1,6 +1,6 @@
 package ru.harati.scavel
 
-import ru.harati.scavel.BasicTypes.{SafeCast, hasNegative, hasOne, hasZero, isAdditive, isMultiplicable, isSubtractive}
+import ru.harati.scavel.BasicTypes.{SafeCast, hasInvert, hasNegative, hasOne, hasZero, isAdditive, isMultiplicable, isSubtractive}
 import ru.harati.scavel.Operations.MappableCollection
 
 import scala.language.higherKinds
@@ -13,7 +13,13 @@ object Operations {
   implicit class UniversalCollection[T, Q[_]](val data: Q[T]) extends AnyVal {
 
     def +(other: Q[T])(implicit additive: isAdditive[T], collection: AdditiveCollection[Q]): Q[T] = collection.plus(data, other)
+    def ++(other: Q[T])(implicit additive: isAdditive[T], collection: AdditiveCollection[Q]): Q[T] = data + other
+    def -(other: Q[T])(implicit additive: isAdditive[T],
+                       collection: AdditiveCollection[Q],
+                       map: MappableCollection[Q],
+                       negative: hasNegative[T]) = collection.plus(data, - other)
     def *(f: T)(implicit mul: isMultiplicable[T], map: MappableCollection[Q]): Q[T] = map.map[T, T](data, mul.multiply(_, f))
+    def /(f: T)(implicit mul: isMultiplicable[T], map: MappableCollection[Q], inv: hasInvert[T]) = data * inv.invert(f)
 
     def min(other: Q[T])(implicit com: isComparableCollection[Q], ord: Ordering[T]) = com.min[T](data, other)
     def max(other: Q[T])(implicit com: isComparableCollection[Q], ord: Ordering[T]) = com.max[T](data, other)

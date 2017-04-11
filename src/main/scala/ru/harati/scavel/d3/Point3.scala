@@ -1,7 +1,7 @@
 package ru.harati.scavel.d3
 
 import ru.harati.scavel.BasicTypes.{hasZero, isAdditive, isSubtractive}
-import ru.harati.scavel.{Operations, Point, SelfPointed}
+import ru.harati.scavel.{Operations, Point, PrimitiveFactory, SelfPointed}
 import ru.harati.scavel.Point.OutboundSubtractive
 import ru.harati.scavel.d2.{Point2, Vec2}
 import ru.harati.scavel.Operations.{CollectionFlatTranslation, CollectionTranslation, MappableCollection, hasDistanceCC, hasPlainDimension, isComparableCollection, isFoldableCollection}
@@ -9,8 +9,15 @@ import ru.harati.scavel.Operations.{CollectionFlatTranslation, CollectionTransla
 /**
  * Created by loki on 06.04.2017.
  */
-object Point3 extends hasPlainDimension[Point3] with MappableCollection[Point3] with isFoldableCollection[Point3]
-  with OutboundSubtractive[Point3, Vec3] with CollectionTranslation[Point3, Vec3] with isComparableCollection[Point3] with SelfPointed {
+object Point3 extends hasPlainDimension[Point3]
+  with MappableCollection[Point3]
+  with isFoldableCollection[Point3]
+  with OutboundSubtractive[Point3, Vec3]
+  with CollectionTranslation[Point3, Vec3]
+  with isComparableCollection[Point3]
+  with SelfPointed
+  with PrimitiveFactory[Point3]{
+
   def apply[T](a: T, b: T, c: T) = new Point3(a, b, c)
 
   override def dimension[T](data: Point3[T])(implicit field: hasZero[T]): Int = {
@@ -45,6 +52,8 @@ object Point3 extends hasPlainDimension[Point3] with MappableCollection[Point3] 
   }
 
   implicit def box[T](value: T): Vec3[T] = Vec3(value, value, value)
+
+  override def fill[T](data: T): Point3[T] = Point3(data, data, data)
 }
 
 class Point3[@specialized(Int, Long, Float, Double) T](val x: T, val y: T, val z: T) extends Point[T] {

@@ -3,6 +3,7 @@ import org.scalatest._
 import ru.harati.scavel.Point
 import ru.harati.scavel.d2.inline.Vec2d
 import ru.harati.scavel.d2.{Point2, Vec2}
+import ru.harati.scavel.d3.inline.Vec3d
 import ru.harati.scavel.d3.{AABB, Point3, Vec3}
 
 import scala.Predef.{any2stringadd => _}
@@ -22,6 +23,7 @@ class Tests extends FlatSpec with Matchers {
     Vec2d(4, 4) max Vec2(6D, 3D) shouldBe Vec2(6, 4)
     Point3[Double](1, 2, 3) <+ 4D shouldBe Point3(-3, -2, -1)
     Point3[Double](1, 2, 3) +> 1 shouldBe Point3(2, 3, 4)
+    Vec2d(3, -3) - Vec2d(1, 0) shouldBe Vec2d(2, -3)
   }
 
   "Vec and Point 3" should "have correct elementary operations" in {
@@ -34,6 +36,9 @@ class Tests extends FlatSpec with Matchers {
     (Point3[Int](1, 1, 1) distance Point3[Double](1, 1, 1)) shouldBe 0
     Vec3(0D, 0D, 0D).isZero
     Point2(13, 4) +> 3 shouldBe Point2(16, 7)
+    Vec3d(3,3,3) ++ Vec3d(3D, 2D, 2D) shouldBe Vec3d(6, 5, 5)
+    Vec3d(3,3,3) - Vec3d(3D, 2D, 2D) shouldBe Vec3d(0, 1, 1)
+    Vec3d(4,4,4) / 2D shouldBe Vec3d(2, 2, 2)
   }
 
   "Autoconversion" should "work" in {
@@ -42,7 +47,7 @@ class Tests extends FlatSpec with Matchers {
 
   "AABB" should "work" in {
     val box = AABB(Point3[Double](1, 1, 1), Point3(0.5, 4, 4))
-    box contain Point3[Double](0.75, 2, 2) shouldBe true //If erase Point3 type - compiler error will appear (2.12.1, 07.04.17)
+    box contain Point3(0.75, 2, 2) shouldBe true
     box contain Point2[Double](10, 10) shouldBe false
     box intersects AABB(Point3[Double](-1, -1, -1), Point3[Double](5, 5, 5)) shouldBe true
     box intersects AABB(Point3[Double](5, 5, 5), Point3[Double](10, 12, 17)) shouldBe false
@@ -53,7 +58,7 @@ class Tests extends FlatSpec with Matchers {
     AABB(Point3[Double](4, 5, 0), Point3[Double](1, 3, 0)).isPlane shouldBe true
     AABB(Point3[Double](4, 5, 0), Point3[Double](1, 3, 1)).isPlane shouldBe false
     AABB(Point3[Double](4, 0, 0), Point3[Double](1, 0, 0)).isSegment shouldBe true
-    AABB(Point3[Double](4, 0, 0), Point3[Double](1, 3, 0)).isSegment shouldBe false
+    AABB(Point3(4, 0, 0), Point3(1, 3, 0)).isSegment shouldBe false
   }
 
 }
