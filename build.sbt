@@ -4,8 +4,10 @@ val baseSettings = Seq(
 
   version := "0.2.6",
 
+  scalaVersion := "2.12.3",
+
   libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0",
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test",
+  libraryDependencies += "com.lihaoyi" %%% "utest" % "0.5.3" % "test",
 
   organizationName := "Kirill Lonhus",
   organization := "ru.harati",
@@ -38,7 +40,9 @@ val baseSettings = Seq(
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  }
+  },
+
+  testFrameworks := Seq(new TestFramework("utest.runner.Framework"))
 )
 
 lazy val scavel = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPlatform, JVMPlatform, NativePlatform)
