@@ -2,7 +2,7 @@
 val baseSettings = Seq(
   name := "scavel",
 
-  version := "0.2.11",
+  version := "0.2.6",
 
   scalaVersion := "2.12.3",
 
@@ -12,7 +12,7 @@ val baseSettings = Seq(
   organizationName := "Kirill Lonhus",
   organization := "ru.harati",
   crossPaths := true,
-  crossScalaVersions := Seq("2.10.4","2.11.7", "2.12.1"),
+  crossScalaVersions := Seq("2.10.4", "2.11.7", "2.12.1"),
 
   licenses := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   homepage := Some(url("https://github.com/harati/scavel")),
